@@ -15,7 +15,7 @@ const int chipSelect = BUILTIN_SDCARD;
 const int buildInLEDPin = 13;
 
 
-const char fileName[] = "data.txt";
+const char fileName[] = "dataCSV.CSV";
 float humidity, temperature;
 
 
@@ -25,11 +25,8 @@ void setup() {
   Serial.begin(9600); //Serielle Verbindung starten
   sdCardSetup();
   dht.begin(); //DHT11 Sensor starten
-
   //removes the data if there is already one
   SD.remove(fileName);
-
-
 }
 
 void sdCardSetup(){
@@ -39,7 +36,6 @@ void sdCardSetup(){
     Serial.println("initialization failed!");
     return;
   }
-  Serial.println("initialization done.");
 }
 
 void loop() {
@@ -51,7 +47,6 @@ void loop() {
   temperature = dht.readTemperature();//die Temperatur auslesen und unter „Temperatur“ speichern
   
   saveData(temperature,humidity);
-
 }
 
 
@@ -66,7 +61,7 @@ void saveData(float temperature,float humidity){
   dtostrf(humidity,4,2,humidityBuffer);
 
   strcat(dataChar,tempBuffer);
-  strcat(dataChar, " - ");
+  strcat(dataChar, ",");
   strcat(dataChar,humidityBuffer);
 
   Serial.println(dataChar);
@@ -75,12 +70,12 @@ void saveData(float temperature,float humidity){
   if (myFile) {
     Serial.print("writing to");
     Serial.println(fileName);
-    myFile.println(dataChar);
+    myFile.println(String(dataChar));
     //colse the file
     myFile.close();
   } else {
     //if the file couldn't be opend => print error message
-    Serial.print("error oppening the file :");
+    Serial.print("error oppening the file: ");
     Serial.println(fileName); 
   }
 }
